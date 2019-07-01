@@ -46,16 +46,16 @@ variable "instance_class" {
 }
 
 locals {
-  maintenance_start_hour   = "${random_integer.start_hour.result}"
-  maintenance_start_minute = "${random_integer.start_minute.result}"
-  maintenance_end_hour     = "${local.maintenance_start_hour + 1}"
-  maintenance_end_minute   = "${local.maintenance_start_minute}"
-  backup_start_hour        = "${local.maintenance_start_hour + 1}"
-  backup_start_minute      = "${local.maintenance_start_minute}"
-  backup_end_hour          = "${local.maintenance_end_hour + 1}"
-  backup_end_minute        = "${local.maintenance_end_minute}"
-  maintenance_window       = "${format("Wed:%02s:%02s-Wed:%02s:%02s", local.maintenance_start_hour, local.maintenance_start_minute, local.maintenance_end_hour, local.maintenance_end_minute)}"
+  backup_start_hour        = "${random_integer.start_hour.result}"
+  backup_start_minute      = "${random_integer.start_minute.result}"
+  backup_end_hour          = "${local.backup_start_hour + 1}"
+  backup_end_minute        = "${local.backup_start_minute}"
+  maintenance_start_hour   = "${local.backup_start_hour + 1}"
+  maintenance_start_minute = "${local.backup_start_minute}"
+  maintenance_end_hour     = "${local.backup_end_hour + 1}"
+  maintenance_end_minute   = "${local.backup_end_minute}"
   backup_window            = "${format("%02s:%02s-%02s:%02s", local.backup_start_hour, local.backup_start_minute, local.backup_end_hour, local.backup_end_minute)}"
+  maintenance_window       = "${format("Wed:%02s:%02s-Wed:%02s:%02s", local.maintenance_start_hour, local.maintenance_start_minute, local.maintenance_end_hour, local.maintenance_end_minute)}"
 
   default_versions = {
     postgres = "10.6"
@@ -68,7 +68,7 @@ locals {
   }
 
   version = "${coalesce(var.vers, lookup(local.default_versions, var.type))}"
-  port = "${coalesce(var.port, lookup(local.default_ports, var.type))}"
+  port    = "${coalesce(var.port, lookup(local.default_ports, var.type))}"
 }
 
 resource "random_string" "password" {
@@ -187,7 +187,7 @@ output "username" {
 }
 
 output "password_secret_id" {
-  depends_on  = ["aws_secretsmanager_secret_version.password_version"]
+  depends_on = ["aws_secretsmanager_secret_version.password_version"]
 
   description = "The username used for logging into the RDS database"
   value       = "${aws_secretsmanager_secret.password.id}"
