@@ -161,6 +161,11 @@ resource "aws_db_instance" "database" {
   }
 }
 
+output "id" {
+  description = "The id of the generated database"
+  value       = "${aws_db_instance.database.id}"
+}
+
 output "name" {
   description = "The name of the database created inside of the RDS database"
   value       = "${aws_db_instance.database.name}"
