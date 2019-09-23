@@ -1,9 +1,14 @@
+variable "identifier" {
+  description = "The name/identifier of the RDS instance"
+  type        = "string"
+}
+
 variable "prefix" {
   description = "The prefix to attach to resources related to the database"
   type        = "string"
 }
 
-variable "name" {
+variable "database_name" {
   description = "The name of the database"
   type        = "string"
 }
@@ -143,17 +148,18 @@ resource "aws_db_instance" "database" {
   db_subnet_group_name       = "${aws_db_subnet_group.subnet_group.name}"
   engine                     = "${var.type}"
   engine_version             = "${local.version}"
+  identifier                 = "${var.identifier}"
   instance_class             = "${var.instance_class}"
   kms_key_id                 = "${aws_kms_key.key.arn}"
   maintenance_window         = "${local.maintenance_window}"
   multi_az                   = true
-  name                       = "${var.name}"
+  name                       = "${var.database_name}"
   password                   = "${random_string.password.result}"
   port                       = "${local.port}"
   skip_final_snapshot        = true
   storage_encrypted          = true
   storage_type               = "gp2"
-  username                   = "${var.name}"
+  username                   = "${var.database_name}"
   vpc_security_group_ids     = ["${aws_security_group.allowed.id}"]
 
   tags {
