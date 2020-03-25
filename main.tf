@@ -13,6 +13,12 @@ variable "database_name" {
   type        = "string"
 }
 
+variable "delete_automated_backups" {
+  description = "delete automated backups after the DB instance is deleted"
+  type        = "string"
+  default     = false
+}
+
 variable "port" {
   description = "The port to listen on for the database"
   type        = "string"
@@ -161,6 +167,7 @@ resource "aws_db_instance" "database" {
   storage_type               = "gp2"
   username                   = "${var.database_name}"
   vpc_security_group_ids     = ["${aws_security_group.allowed.id}"]
+  delete_automated_backups   = "${var.delete_automated_backups}"
 
   tags {
     Name = "${var.prefix}-rds"
