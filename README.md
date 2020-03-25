@@ -72,6 +72,7 @@ module "my_database" {
 - `port` - the port for the database in the RDS to listen on, defaults to `5432` for type `postgresql` and `3306` for type `mysql`
 - `vers` - the version of the database software to use, defaults to `10.6` for type `postgres` and `5.6.37` for type `mysql`
 - `instance_class` - the instance type to use for the RDS databases, defaults to `db.t3.small`
+- `delete_automated_backups` - Specifies whether to remove automated backups immediately after the DB instance is deleted. Default is false.
 
 ### Outputs
 
