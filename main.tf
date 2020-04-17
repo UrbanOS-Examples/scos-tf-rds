@@ -11,12 +11,19 @@ variable "prefix" {
 variable "database_name" {
   description = "The name of the database"
   type        = "string"
+  default     = ""
 }
 
 variable "delete_automated_backups" {
   description = "delete automated backups after the DB instance is deleted"
   type        = "string"
   default     = false
+}
+
+variable "multi_az" {
+  description = "Whether or not the instance should span multiple availability zones"
+  type        = "string"
+  default     = true
 }
 
 variable "port" {
@@ -28,6 +35,12 @@ variable "port" {
 variable "type" {
   description = "The type of the database (postgres, mysql, etc.)"
   type        = "string"
+}
+
+variable "username" {
+  description = "The admin username for the database instance"
+  type        = "string"
+  default     = ""
 }
 
 variable "vers" {
@@ -78,8 +91,8 @@ locals {
     mysql    = 3306
   }
 
-  version = "${coalesce(var.vers, lookup(local.default_versions, var.type))}"
-  port    = "${coalesce(var.port, lookup(local.default_ports, var.type))}"
+  version = "${coalesce(var.vers, lookup(local.default_versions, var.type, ""))}"
+  port    = "${coalesce(var.port, lookup(local.default_ports, var.type, ""))}"
 }
 
 resource "random_string" "password" {
@@ -158,14 +171,14 @@ resource "aws_db_instance" "database" {
   instance_class             = "${var.instance_class}"
   kms_key_id                 = "${aws_kms_key.key.arn}"
   maintenance_window         = "${local.maintenance_window}"
-  multi_az                   = true
+  multi_az                   = "${var.multi_az}"
   name                       = "${var.database_name}"
   password                   = "${random_string.password.result}"
   port                       = "${local.port}"
   skip_final_snapshot        = true
   storage_encrypted          = true
   storage_type               = "gp2"
-  username                   = "${var.database_name}"
+  username                   = "${coalesce(var.username, var.database_name, "admin")}"
   vpc_security_group_ids     = ["${aws_security_group.allowed.id}"]
   delete_automated_backups   = "${var.delete_automated_backups}"
 
