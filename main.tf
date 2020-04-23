@@ -69,6 +69,11 @@ variable "instance_class" {
   default     = "db.t3.small"
 }
 
+variable "allocated_storage" {
+  description = "The hard drive space (in GB) provided to the database"
+  default     = 100
+}
+
 locals {
   backup_start_hour        = "${random_integer.start_hour.result}"
   backup_start_minute      = "${random_integer.start_minute.result}"
@@ -159,7 +164,7 @@ resource "random_integer" "start_minute" {
 }
 
 resource "aws_db_instance" "database" {
-  allocated_storage          = 100
+  allocated_storage          = "${var.allocated_storage}"
   apply_immediately          = false
   auto_minor_version_upgrade = true
   backup_retention_period    = 14
