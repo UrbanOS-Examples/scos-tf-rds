@@ -64,6 +64,12 @@ variable "attached_security_groups" {
   type        = "list"
 }
 
+variable "attached_security_group_cidr_blocks" {
+  description = "The cidr blocks that are allowed to access the database"
+  type        = "list"
+  default     = []
+}
+
 variable "instance_class" {
   description = "The instance type to use for the database"
   default     = "db.t3.small"
@@ -146,6 +152,14 @@ resource "aws_security_group" "allowed" {
     from_port       = "${local.port}"
     protocol        = "tcp"
     security_groups = ["${var.attached_security_groups}"]
+    to_port         = "${local.port}"
+  }
+
+  ingress {
+    description     = "Default port allow for RDS ${var.prefix} from CIDR blocks"
+    from_port       = "${local.port}"
+    protocol        = "tcp"
+    cidr_blocks     = ["${var.attached_security_group_cidr_blocks}"]
     to_port         = "${local.port}"
   }
 }
