@@ -94,7 +94,7 @@ locals {
 
   default_versions = {
     postgres = "10.6"
-    mysql    = "5.6.37"
+    mysql    = "5.7.22"
   }
 
   default_ports = {
