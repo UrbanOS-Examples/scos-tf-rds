@@ -154,14 +154,17 @@ resource "aws_security_group" "allowed" {
     security_groups = ["${var.attached_security_groups}"]
     to_port         = "${local.port}"
   }
+}
 
-  ingress {
-    description     = "Default port allow for RDS ${var.prefix} from CIDR blocks"
-    from_port       = "${local.port}"
-    protocol        = "tcp"
-    cidr_blocks     = ["${var.attached_security_group_cidr_blocks}"]
-    to_port         = "${local.port}"
-  }
+resource "aws_security_group_rule" "allowed_from_cidr" {
+  count             = "${length(var.attached_security_group_cidr_blocks) > 0 ? 1 : 0}"
+  type              = "ingress"
+  description       = "Default port allow for RDS ${var.prefix} from CIDR blocks"
+  from_port         = "${local.port}"
+  protocol          = "tcp"
+  cidr_blocks       = ["${var.attached_security_group_cidr_blocks}"]
+  to_port           = "${local.port}"
+  security_group_id = "${aws_security_group.allowed.id}"
 }
 
 # hours are in UTC
