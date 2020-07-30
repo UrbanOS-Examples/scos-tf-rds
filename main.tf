@@ -80,6 +80,11 @@ variable "allocated_storage" {
   default     = 100
 }
 
+variable "parameter_group_name" {
+  description = "The name of the parameter group to use"
+  type        = "string"
+}
+
 locals {
   backup_start_hour        = "${random_integer.start_hour.result}"
   backup_start_minute      = "${random_integer.start_minute.result}"
@@ -102,8 +107,14 @@ locals {
     mysql    = 3306
   }
 
+  default_parameter_groups = {
+    postgres  = "default.postgres10"
+    mysql     = "default.mysql5.7"
+  }
+
   version = "${coalesce(var.vers, lookup(local.default_versions, var.type, ""))}"
   port    = "${coalesce(var.port, lookup(local.default_ports, var.type, ""))}"
+  parameter_group_name = "${coalesce(var.parameter_group_name, lookup(local.default_parameter_groups, var.type, ""))}"
 }
 
 resource "random_string" "password" {
@@ -203,6 +214,7 @@ resource "aws_db_instance" "database" {
   username                   = "${coalesce(var.username, var.database_name, "admin")}"
   vpc_security_group_ids     = ["${aws_security_group.allowed.id}"]
   delete_automated_backups   = "${var.delete_automated_backups}"
+  parameter_group_name       = "${local.parameter_group_name}"
 
   tags {
     Name = "${var.prefix}-rds"
