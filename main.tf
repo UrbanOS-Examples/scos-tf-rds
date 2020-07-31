@@ -83,6 +83,7 @@ variable "allocated_storage" {
 variable "parameter_group_name" {
   description = "The name of the parameter group to use"
   type        = "string"
+  default     = ""
 }
 
 locals {
