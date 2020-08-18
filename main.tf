@@ -134,7 +134,8 @@ resource "aws_secretsmanager_secret_version" "password_version" {
 }
 
 resource "aws_kms_key" "key" {
-  description = "Encryption key for RDS ${var.prefix}"
+  description         = "Encryption key for RDS ${var.prefix}"
+  enable_key_rotation = true
 }
 
 resource "aws_kms_alias" "key_alias" {
