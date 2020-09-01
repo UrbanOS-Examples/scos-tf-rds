@@ -109,12 +109,12 @@ locals {
   }
 
   default_parameter_groups = {
-    postgres  = "default.postgres10"
-    mysql     = "default.mysql5.7"
+    postgres = "default.postgres10"
+    mysql    = "default.mysql5.7"
   }
 
-  version = "${coalesce(var.vers, lookup(local.default_versions, var.type, ""))}"
-  port    = "${coalesce(var.port, lookup(local.default_ports, var.type, ""))}"
+  version              = "${coalesce(var.vers, lookup(local.default_versions, var.type, ""))}"
+  port                 = "${coalesce(var.port, lookup(local.default_ports, var.type, ""))}"
   parameter_group_name = "${coalesce(var.parameter_group_name, lookup(local.default_parameter_groups, var.type, ""))}"
 }
 
@@ -159,14 +159,17 @@ resource "aws_security_group" "allowed" {
   tags {
     Name = "${var.prefix}-rds-allowed"
   }
+}
 
-  ingress {
-    description     = "Default port allow for RDS ${var.prefix}"
-    from_port       = "${local.port}"
-    protocol        = "tcp"
-    security_groups = ["${var.attached_security_groups}"]
-    to_port         = "${local.port}"
-  }
+resource "aws_security_group_rule" "allowed_from_groups" {
+  count                    = "${length(var.attached_security_groups)}"
+  type                     = "ingress"
+  description              = "Default port allow for RDS ${var.prefix}"
+  from_port                = "${local.port}"
+  protocol                 = "tcp"
+  source_security_group_id = "${var.attached_security_groups[count.index]}"
+  to_port                  = "${local.port}"
+  security_group_id        = "${aws_security_group.allowed.id}"
 }
 
 resource "aws_security_group_rule" "allowed_from_cidr" {
