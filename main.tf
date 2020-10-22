@@ -99,7 +99,7 @@ locals {
   maintenance_window       = "${format("Wed:%02s:%02s-Wed:%02s:%02s", local.maintenance_start_hour, local.maintenance_start_minute, local.maintenance_end_hour, local.maintenance_end_minute)}"
 
   default_versions = {
-    postgres = "10.6"
+    postgres = "10.13"
     mysql    = "5.7.22"
   }
 
