@@ -121,8 +121,9 @@ locals {
   }
 
   default_parameter_groups = {
-    postgres = "default.postgres10"
-    mysql    = "default.mysql5.7"
+    postgres      = "default.postgres10"
+    mysql         = "default.mysql5.7"
+    sqlserver-web = "default.sqlserver-web-14.0"
   }
 
   version = coalesce(var.vers, lookup(local.default_versions, var.type, ""))
