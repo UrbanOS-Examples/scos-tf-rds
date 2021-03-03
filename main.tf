@@ -215,7 +215,7 @@ resource "random_integer" "start_minute" {
 resource "aws_db_instance" "database" {
   allocated_storage          = var.allocated_storage
   apply_immediately          = false
-  auto_minor_version_upgrade = true
+  auto_minor_version_upgrade = false
   backup_retention_period    = 14
   backup_window              = local.backup_window
   db_subnet_group_name       = aws_db_subnet_group.subnet_group.name
